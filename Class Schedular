@@ -1,0 +1,882 @@
+REQUIRED CODE
+
+
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Calendar, LayoutDashboard, School, Users } from "lucide-react";
+
+const Navbar = () => {
+  const location = useLocation();
+  
+  const isActive = (path: string) => location.pathname === path;
+  
+  const navItems = [
+    { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+    { path: "/timetable", label: "Timetable", icon: Calendar },
+    { path: "/classrooms", label: "Classrooms", icon: School },
+    { path: "/faculty", label: "Faculty", icon: Users },
+  ];
+
+  return (
+    <nav className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between">
+          <Link to="/" className="flex items-center space-x-2">
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+              <Calendar className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Smart Scheduler
+            </span>
+          </Link>
+
+          <div className="hidden md:flex items-center space-x-1">
+            {navItems.map((item) => (
+              <Link key={item.path} to={item.path}>
+                <Button
+                  variant={isActive(item.path) ? "default" : "ghost"}
+                  className="transition-all duration-300"
+                >
+                  <item.icon className="h-4 w-4 mr-2" />
+                  {item.label}
+                </Button>
+              </Link>
+            ))}
+          </div>
+
+          <Button className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity">
+            Get Started
+          </Button>
+        </div>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Plus, MapPin, Users as UsersIcon } from "lucide-react";
+import Navbar from "@/components/Navbar";
+
+const Classrooms = () => {
+  const classrooms = [
+    { id: 1, name: "A-101", capacity: 50, building: "Main Building", floor: "1st Floor", status: "Available", equipment: ["Projector", "Whiteboard"] },
+    { id: 2, name: "B-203", capacity: 40, building: "Science Block", floor: "2nd Floor", status: "Occupied", equipment: ["Smart Board", "Lab Equipment"] },
+    { id: 3, name: "C-105", capacity: 60, building: "Engineering Block", floor: "1st Floor", status: "Available", equipment: ["Projector", "Computer"] },
+    { id: 4, name: "D-301", capacity: 35, building: "IT Building", floor: "3rd Floor", status: "Maintenance", equipment: ["Computer Lab", "Projector"] },
+    { id: 5, name: "E-204", capacity: 45, building: "Science Block", floor: "2nd Floor", status: "Available", equipment: ["Microscopes", "Lab Bench"] },
+    { id: 6, name: "F-102", capacity: 55, building: "Main Building", floor: "1st Floor", status: "Available", equipment: ["Audio System", "Projector"] },
+  ];
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "Available":
+        return "bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20";
+      case "Occupied":
+        return "bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20";
+      case "Maintenance":
+        return "bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20";
+      default:
+        return "bg-muted";
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <main className="container mx-auto px-4 py-8">
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Classrooms</h1>
+            <p className="text-muted-foreground">Manage and allocate classroom resources</p>
+          </div>
+          <Button className="bg-gradient-to-r from-primary to-secondary">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Classroom
+          </Button>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {classrooms.map((classroom) => (
+            <Card key={classroom.id} className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+              <CardHeader>
+                <div className="flex items-start justify-between">
+                  <CardTitle className="text-xl">{classroom.name}</CardTitle>
+                  <Badge className={getStatusColor(classroom.status)}>
+                    {classroom.status}
+                  </Badge>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <MapPin className="h-4 w-4 mr-2" />
+                  <span>{classroom.building} - {classroom.floor}</span>
+                </div>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <UsersIcon className="h-4 w-4 mr-2" />
+                  <span>Capacity: {classroom.capacity} students</span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium mb-2">Equipment:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {classroom.equipment.map((item, index) => (
+                      <Badge key={index} variant="outline" className="text-xs">
+                        {item}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <div className="pt-2">
+                  <Button variant="outline" className="w-full">
+                    View Details
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default Classrooms;
+
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar, School, Users, Clock } from "lucide-react";
+import Navbar from "@/components/Navbar";
+
+const Dashboard = () => {
+  const stats = [
+    { title: "Total Classes", value: "156", icon: Calendar, color: "from-primary to-primary-glow" },
+    { title: "Classrooms", value: "42", icon: School, color: "from-secondary to-accent" },
+    { title: "Faculty Members", value: "87", icon: Users, color: "from-primary to-secondary" },
+    { title: "Active Schedules", value: "12", icon: Clock, color: "from-accent to-secondary" },
+  ];
+
+  const recentActivity = [
+    { action: "Timetable generated for Fall 2024", time: "2 hours ago" },
+    { action: "Classroom A-101 allocated to Mathematics", time: "4 hours ago" },
+    { action: "Faculty schedule updated", time: "1 day ago" },
+    { action: "New course added: Data Structures", time: "2 days ago" },
+  ];
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <main className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
+          <p className="text-muted-foreground">Welcome back! Here's an overview of your scheduling system.</p>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+          {stats.map((stat, index) => (
+            <Card key={index} className="hover:shadow-lg transition-all duration-300">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                    <h3 className="text-3xl font-bold mt-2">{stat.value}</h3>
+                  </div>
+                  <div className={`h-12 w-12 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
+                    <stat.icon className="h-6 w-6 text-white" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Recent Activity */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {recentActivity.map((activity, index) => (
+                  <div key={index} className="flex items-start space-x-3 pb-4 last:pb-0 border-b last:border-0">
+                    <div className="h-2 w-2 rounded-full bg-primary mt-2" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{activity.action}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{activity.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <button className="w-full text-left p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors">
+                  <h4 className="font-medium mb-1">Generate New Timetable</h4>
+                  <p className="text-sm text-muted-foreground">Create an optimized schedule for the semester</p>
+                </button>
+                <button className="w-full text-left p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors">
+                  <h4 className="font-medium mb-1">Add Classroom</h4>
+                  <p className="text-sm text-muted-foreground">Register a new classroom in the system</p>
+                </button>
+                <button className="w-full text-left p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors">
+                  <h4 className="font-medium mb-1">Manage Faculty</h4>
+                  <p className="text-sm text-muted-foreground">Update faculty information and preferences</p>
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default Dashboard;
+
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Plus, Mail, Phone } from "lucide-react";
+import Navbar from "@/components/Navbar";
+
+const Faculty = () => {
+  const faculty = [
+    { id: 1, name: "Dr. John Smith", department: "Mathematics", email: "j.smith@university.edu", phone: "+1 234-567-8901", courses: 3, hours: 18 },
+    { id: 2, name: "Dr. Sarah Johnson", department: "Physics", email: "s.johnson@university.edu", phone: "+1 234-567-8902", courses: 2, hours: 12 },
+    { id: 3, name: "Dr. Michael Williams", department: "Chemistry", email: "m.williams@university.edu", phone: "+1 234-567-8903", courses: 4, hours: 20 },
+    { id: 4, name: "Prof. Emily Brown", department: "Computer Science", email: "e.brown@university.edu", phone: "+1 234-567-8904", courses: 3, hours: 15 },
+    { id: 5, name: "Dr. Robert Davis", department: "Biology", email: "r.davis@university.edu", phone: "+1 234-567-8905", courses: 2, hours: 10 },
+    { id: 6, name: "Prof. Jennifer Wilson", department: "English", email: "j.wilson@university.edu", phone: "+1 234-567-8906", courses: 3, hours: 16 },
+  ];
+
+  const getInitials = (name: string) => {
+    return name.split(" ").map(n => n[0]).join("");
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <main className="container mx-auto px-4 py-8">
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Faculty</h1>
+            <p className="text-muted-foreground">Manage faculty members and their schedules</p>
+          </div>
+          <Button className="bg-gradient-to-r from-primary to-secondary">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Faculty
+          </Button>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2">
+          {faculty.map((member) => (
+            <Card key={member.id} className="hover:shadow-lg transition-all duration-300">
+              <CardHeader>
+                <div className="flex items-start gap-4">
+                  <Avatar className="h-16 w-16">
+                    <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-white text-lg">
+                      {getInitials(member.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <CardTitle className="text-xl mb-1">{member.name}</CardTitle>
+                    <Badge variant="outline" className="mb-2">
+                      {member.department}
+                    </Badge>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Mail className="h-4 w-4 mr-2" />
+                  <span>{member.email}</span>
+                </div>
+                <div className="flex items-center text-sm text-muted-foreground">
+                  <Phone className="h-4 w-4 mr-2" />
+                  <span>{member.phone}</span>
+                </div>
+                <div className="pt-3 border-t border-border">
+                  <div className="grid grid-cols-2 gap-4 text-center">
+                    <div>
+                      <div className="text-2xl font-bold text-primary">{member.courses}</div>
+                      <div className="text-xs text-muted-foreground">Courses</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-secondary">{member.hours}</div>
+                      <div className="text-xs text-muted-foreground">Hours/Week</div>
+                    </div>
+                  </div>
+                </div>
+                <Button variant="outline" className="w-full mt-2">
+                  View Schedule
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default Faculty;
+
+
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Calendar, School, Users, Clock, Zap, Shield } from "lucide-react";
+
+const Landing = () => {
+  const features = [
+    {
+      icon: Calendar,
+      title: "Smart Timetable Generation",
+      description: "Automatically generate optimized timetables that consider all constraints and preferences.",
+    },
+    {
+      icon: School,
+      title: "Classroom Allocation",
+      description: "Efficiently allocate classrooms based on capacity, equipment, and availability.",
+    },
+    {
+      icon: Users,
+      title: "Faculty Management",
+      description: "Manage faculty schedules, preferences, and workload distribution seamlessly.",
+    },
+    {
+      icon: Clock,
+      title: "Real-time Updates",
+      description: "Make instant changes and see updates across all schedules in real-time.",
+    },
+    {
+      icon: Zap,
+      title: "Conflict Resolution",
+      description: "Automatically detect and resolve scheduling conflicts before they happen.",
+    },
+    {
+      icon: Shield,
+      title: "Secure & Reliable",
+      description: "Enterprise-grade security ensuring your data is always protected.",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/5 to-background" />
+        <div className="container relative mx-auto px-4 py-20 md:py-32">
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="mb-6 inline-block rounded-full bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
+              Intelligent Scheduling Platform
+            </div>
+            <h1 className="mb-6 text-4xl md:text-6xl font-bold tracking-tight">
+              Transform Your{" "}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                Classroom Scheduling
+              </span>
+            </h1>
+            <p className="mb-8 text-lg md:text-xl text-muted-foreground">
+              Automate classroom allocation, generate optimal timetables, and manage faculty schedules with our intelligent platform.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link to="/dashboard">
+                <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity">
+                  Get Started Free
+                </Button>
+              </Link>
+              <Button size="lg" variant="outline">
+                Watch Demo
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-muted/50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Everything You Need to Schedule Smarter
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Our comprehensive platform provides all the tools you need to streamline your scheduling process.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map((feature, index) => (
+              <Card key={index} className="border-border hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <CardContent className="p-6">
+                  <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br from-primary/10 to-secondary/10">
+                    <feature.icon className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="mb-2 text-xl font-semibold">{feature.title}</h3>
+                  <p className="text-muted-foreground">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-secondary/5">
+            <CardContent className="p-12 text-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Ready to Simplify Your Scheduling?
+              </h2>
+              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+                Join thousands of institutions already using Smart Scheduler to save time and optimize their operations.
+              </p>
+              <Link to="/dashboard">
+                <Button size="lg" className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity">
+                  Start Scheduling Now
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default Landing;
+
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Download, RefreshCw } from "lucide-react";
+import Navbar from "@/components/Navbar";
+
+const Timetable = () => {
+  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  const timeSlots = ["9:00 AM", "10:30 AM", "12:00 PM", "2:00 PM", "3:30 PM"];
+  
+  const schedule = {
+    "Monday-9:00 AM": { subject: "Mathematics", room: "A-101", faculty: "Dr. Smith" },
+    "Monday-10:30 AM": { subject: "Physics", room: "B-203", faculty: "Dr. Johnson" },
+    "Tuesday-9:00 AM": { subject: "Chemistry", room: "C-105", faculty: "Dr. Williams" },
+    "Wednesday-12:00 PM": { subject: "Computer Science", room: "D-301", faculty: "Prof. Brown" },
+    "Thursday-2:00 PM": { subject: "Biology", room: "E-204", faculty: "Dr. Davis" },
+    "Friday-9:00 AM": { subject: "English", room: "F-102", faculty: "Prof. Wilson" },
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <main className="container mx-auto px-4 py-8">
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Timetable</h1>
+            <p className="text-muted-foreground">View and manage your class schedules</p>
+          </div>
+          <div className="flex gap-3">
+            <Button variant="outline">
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Regenerate
+            </Button>
+            <Button className="bg-gradient-to-r from-primary to-secondary">
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
+          </div>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Weekly Schedule - Fall 2024</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <div className="min-w-[800px]">
+                <div className="grid grid-cols-6 gap-2">
+                  {/* Header */}
+                  <div className="font-semibold text-sm p-3 bg-muted rounded-lg">Time</div>
+                  {days.map((day) => (
+                    <div key={day} className="font-semibold text-sm p-3 bg-muted rounded-lg text-center">
+                      {day}
+                    </div>
+                  ))}
+
+                  {/* Time slots */}
+                  {timeSlots.map((time) => (
+                    <>
+                      <div key={time} className="text-sm p-3 bg-muted/50 rounded-lg font-medium">
+                        {time}
+                      </div>
+                      {days.map((day) => {
+                        const key = `${day}-${time}`;
+                        const slot = schedule[key as keyof typeof schedule];
+                        return (
+                          <div
+                            key={key}
+                            className={`p-3 rounded-lg border transition-all duration-300 hover:shadow-md ${
+                              slot
+                                ? "bg-gradient-to-br from-primary/10 to-secondary/10 border-primary/20"
+                                : "bg-card border-border"
+                            }`}
+                          >
+                            {slot ? (
+                              <div className="text-xs">
+                                <div className="font-semibold text-foreground mb-1">{slot.subject}</div>
+                                <div className="text-muted-foreground">{slot.room}</div>
+                                <div className="text-muted-foreground">{slot.faculty}</div>
+                              </div>
+                            ) : (
+                              <div className="text-xs text-muted-foreground text-center">-</div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </main>
+    </div>
+  );
+};
+
+export default Timetable;
+
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Scheduler - Intelligent Classroom & Timetable Management</title>
+    <meta name="description" content="Automate classroom allocation, generate optimal timetables, and manage faculty schedules with Smart Scheduler's intelligent platform." />
+    <meta name="author" content="Smart Scheduler" />
+
+    <meta property="og:title" content="Smart Scheduler - Transform Your Classroom Scheduling" />
+    <meta property="og:description" content="Intelligent platform for classroom allocation, timetable generation, and faculty scheduling." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@lovable_dev" />
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+
+
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Landing from "./pages/Landing";
+import Dashboard from "./pages/Dashboard";
+import Timetable from "./pages/Timetable";
+import Classrooms from "./pages/Classrooms";
+import Faculty from "./pages/Faculty";
+import NotFound from "./pages/NotFound";
+
+const queryClient = new QueryClient();
+
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/timetable" element={<Timetable />} />
+          <Route path="/classrooms" element={<Classrooms />} />
+          <Route path="/faculty" element={<Faculty />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
+
+export default App;
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 214 88% 51%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 214 88% 65%;
+
+    --secondary: 188 94% 43%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 188 94% 43%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 214 88% 51%;
+
+    --radius: 0.75rem;
+    
+    --gradient-hero: linear-gradient(135deg, hsl(214 88% 51%) 0%, hsl(188 94% 43%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 40% 98%) 100%);
+    --shadow-soft: 0 4px 20px -2px hsl(214 88% 51% / 0.1);
+    --shadow-medium: 0 8px 30px -4px hsl(214 88% 51% / 0.15);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222 47% 11%;
+    --foreground: 210 40% 98%;
+
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 217 33% 17%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 214 88% 51%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 214 88% 65%;
+
+    --secondary: 188 94% 43%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    --accent: 188 94% 43%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 214 88% 51%;
+    
+    --gradient-hero: linear-gradient(135deg, hsl(214 88% 51%) 0%, hsl(188 94% 43%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(217 33% 17%) 0%, hsl(222 47% 11%) 100%);
+    --shadow-soft: 0 4px 20px -2px hsl(214 88% 51% / 0.2);
+    --shadow-medium: 0 8px 30px -4px hsl(214 88% 51% / 0.25);
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
+DOCUMENTATION
+
+
+# Smart Scheduler
+
+Smart Scheduler is an intelligent classroom and timetable management platform that helps institutions automate classroom allocation, generate optimized timetables, and manage faculty schedules.
+
+## Features
+- Smart timetable generation (frontend UI + integration points)
+- Classroom allocation based on capacity and equipment
+- Faculty management and workload balancing
+- Real-time updates and conflict resolution
+- Export schedules and download reports
+
+## Quick start (development)
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/satvik66385/repo2.git
+   cd repo2
+   ```
+
+2. Install dependencies (example uses npm):
+   ```bash
+   npm install
+   # or
+   pnpm install
+   ```
+
+3. Start the development server (example with Vite):
+   ```bash
+   npm run dev
+   ```
+
+4. Build for production:
+   ```bash
+   npm run build
+   ```
+
+## Project layout (recommended)
+- public/ — static assets and index.html  
+- src/ — React + TypeScript source
+  - src/pages/ — route pages (Landing, Dashboard, Timetable, Classrooms, Faculty)
+  - src/components/ — shared UI components (Navbar, Card, Button, etc.)
+  - src/styles/ — Tailwind CSS and global styles
+- docs/ — project documentation and architecture notes
+- package.json — npm scripts and dependencies
+
+## Documentation
+See `docs/PROJECT.md` for project architecture, coding conventions, environment variables, and deployment notes.
+
+## Contributing
+Contributions are welcome. Please:
+1. Fork the repository (or create a branch).
+2. Implement your change with tests where appropriate.
+3. Open a pull request describing the change.
+
+Follow the coding conventions in `docs/PROJECT.md`.
+
+## License
+This project is licensed under the MIT License — see `LICENSE` for details.
+
+
+
+
+
+# Project Documentation — Smart Scheduler
+
+This document provides architecture notes, development conventions, environment variables, and deployment guidance.
+
+## Overview
+Smart Scheduler is a frontend-first application (React + TypeScript) providing UI for timetable generation, classroom allocation, and faculty management. The architecture is modular with pages, shared UI components, and a thin data-layer that can be connected to a backend API.
+
+## Architecture
+- UI: React + TypeScript, component-driven (e.g., Navbar, Card, Button, Avatar).
+- Styling: Tailwind CSS (custom design tokens in CSS variables).
+- State & Data: plan to use React Query (@tanstack/react-query) for server state.
+- Routing: react-router-dom for client-side routes.
+
+## Folder structure (recommended)
+```
+/public
+/src
+  /components
+    /ui          # design system primitives (Button, Card, Avatar, Badge, etc.)
+    Navbar.tsx
+  /pages         # route pages (Landing, Dashboard, Timetable, Classrooms, Faculty)
+  /utils         # helpers, formatters, API wrappers
+  main.tsx
+/docs
+  PROJECT.md
+tailwind.config.js
+package.json
+```
+
+## Environment variables
+- VITE_API_URL — backend API base URL
+- VITE_APP_ENV — development | staging | production
+
+Store these in `.env` or `.env.local` (never check secrets into source control).
+
+## Coding conventions
+- TypeScript strict mode enabled (recommended).
+- Use React.FC only where appropriate; prefer named function components.
+- Prefer composable UI primitives. Use `asChild` pattern or `NavLink` for accessible links.
+- Use semantic HTML and ARIA where needed for accessibility.
+- Use stable keys for lists; avoid index keys unless items are static.
+
+## Styling & Design tokens
+Design variables are defined as CSS custom properties (HSL triplets). Use utility classes and prefer using design tokens for colors and spacing.
+
+Example:
+```css
+/* Use like: color: hsl(var(--primary)); */
+```
+
+## Data fetching
+Use React Query for caching and background updates. Structure API calls in `/src/api` and expose typed hooks like `useClassrooms`, `useTimetable`, `useFaculty`.
+
+## Testing
+- Unit tests: Vitest or Jest + Testing Library
+- E2E: Playwright or Cypress
+
+## CI / CD
+- Use GitHub Actions for CI:
+  - Install deps, run lint/type-check/tests on PRs.
+  - Build on merges to `main`.
+- Deploy: Vercel / Netlify for frontend; configure environment variables in the hosting provider.
+
+## Deployment notes
+- Ensure `VITE_API_URL` is set in hosting environment.
+- Build command: `npm run build`; output served from `dist/` (Vite) or equivalent.
+
+## Next steps (recommended)
+- Add initial React + Vite starter with Tailwind config and example pages.
+- Add unit test scaffolding and basic linting (ESLint + Prettier).
+- Add GitHub Actions workflow for CI.
